@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import json
 import threading
+import os
 
 from database import get_db, init_db
 from train import train_mnist_model
@@ -9,6 +10,14 @@ from train import train_mnist_model
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def index(path):
+    if path != "" and os.path.exists("static/" + path):
+        return send_from_directory("static", path)
+    else:
+        return send_from_directory("static", "index.html")
+    
 @app.route('/experiment', methods=['POST'])
 def start_experiment():
     data = request.json
