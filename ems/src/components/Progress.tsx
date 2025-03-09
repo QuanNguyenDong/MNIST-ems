@@ -18,16 +18,13 @@ const Progress: React.FC<ProgressProps> = ({ experiments }) => {
               LR
             </th>
             <th scope="col" className="px-6 py-3">
-              Epochs
-            </th>
-            <th scope="col" className="px-6 py-3">
               BS
             </th>
             <th scope="col" className="px-6 py-3">
               Status
             </th>
             <th scope="col" className="px-6 py-3">
-              Epoch
+              Epochs
             </th>
             <th scope="col" className="px-6 py-3">
               Accuracy
@@ -39,7 +36,7 @@ const Progress: React.FC<ProgressProps> = ({ experiments }) => {
         </thead>
         <tbody>
           {experiments.map((exp) => {
-            const { epochs, learning_rate, batch_size } = exp.params;
+            const { learning_rate, batch_size } = exp.params;
             return (
               <tr key={exp.id} className="bg-white border-b border-gray-200">
                 <th
@@ -49,7 +46,6 @@ const Progress: React.FC<ProgressProps> = ({ experiments }) => {
                   {exp.id}
                 </th>
                 <td className="px-6 py-4">{learning_rate}</td>
-                <td className="px-6 py-4">{epochs}</td>
                 <td className="px-6 py-4">{batch_size}</td>
                 <td className="px-6 py-4">{exp.status}</td>
                 <td className="px-6 py-4">

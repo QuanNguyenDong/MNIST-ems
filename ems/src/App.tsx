@@ -6,22 +6,22 @@ import { getExperimentRunning, RunningExpResponse } from "./service/service";
 
 function App() {
   const [runningExps, setRunningExps] = useState<RunningExpResponse[]>([]);
-  const [event, countEvent] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      getExperimentRunning()
-        .then((exps) => {
-          setRunningExps(exps);
-          if (exps.length === 0) {
-            countEvent(event + 1);
-            clearInterval(interval);
-          }
-        })
-        .catch(console.error);
+    getExperimentRunning().then((exps) => setRunningExps(exps));
+  }, []);
+
+  useEffect(() => {
+    const startPolling = setInterval(async () => {
+      if (runningExps.length === 0) {
+        clearInterval(startPolling);
+      } else {
+        const exps = await getExperimentRunning();
+        setRunningExps(exps);
+      }
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(startPolling);
   }, [runningExps]);
 
   return (
@@ -29,7 +29,18 @@ function App() {
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
         Experiment Management System
       </h1>
-      <ParamsForm callbackOnRun={() => setRunningExps([...runningExps])} />
+      <ParamsForm
+        callbackOnRun={(exp_id, status, params) => {
+          const queuedExp: RunningExpResponse = {
+            id: exp_id,
+            params,
+            status,
+            current_epoch: 0,
+            total_epochs: params.epochs,
+          };
+          setRunningExps((prev) => [...prev, queuedExp]);
+        }}
+      />
       <div className="mt-4">
         <div className="flex flex-col items-center w-full">
           <div className="py-4 w-4/5">
@@ -44,7 +55,7 @@ function App() {
             <h2 className="text-lg sm:text-xl font-bold mb-2">
               Training History
             </h2>
-            <History newEvent={event}/>
+            <History newEvent={runningExps} />
           </div>
         </div>
       </div>

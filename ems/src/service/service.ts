@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-interface ExperimentParams {
+export interface ExperimentParams {
   epochs: number;
   learning_rate: number;
   batch_size: number;

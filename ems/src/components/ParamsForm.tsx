@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import Button from "./Button";
-import { startExperiment } from "../service/service";
+import { ExperimentParams, startExperiment } from "../service/service";
 
 const ParamsForm: React.FC<{
-  callbackOnRun?: () => void;
+  callbackOnRun?: (
+    exp_id: number,
+    status: string,
+    params: ExperimentParams
+  ) => void;
 }> = ({ callbackOnRun }) => {
-  const [hyperparameter, setHyperparameter] = useState({
+  const [hyperparameter, setHyperparameter] = useState<ExperimentParams>({
     learning_rate: 0.01,
     batch_size: 64,
     epochs: 5,
@@ -21,9 +25,10 @@ const ParamsForm: React.FC<{
 
   const triggerExperiment = async () => {
     try {
-      await startExperiment(hyperparameter);
+      const response = await startExperiment(hyperparameter);
+      const { experiment_id, status } = response;
       if (callbackOnRun) {
-        callbackOnRun();
+        callbackOnRun(experiment_id, status, hyperparameter);
       }
     } catch (error) {
       alert(error);
